@@ -1,7 +1,7 @@
 # heap2asm bootstrap
 
 A script and set of sources for building a native heap2asm executable. heap2asm
-is used by (but typically not bundeld with) the heap2exec script, which is used
+is used by (but typically not bundled with) the heap2exec script, which is used
 to turn a smlnj heap image into an executable.
 
 ## Rationale
