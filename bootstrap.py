@@ -40,7 +40,7 @@ def main():
   make_executable(script_path)
 
   out_path = artefact('heap2asm')
-  run(['./heap2exec', heap_path, out_path])
+  run(['./heap2exec', script_path, heap_path, out_path])
   print(f"All done. Final executable in {out_path}")
 
 if __name__ == '__main__':

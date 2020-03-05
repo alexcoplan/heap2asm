@@ -9,7 +9,7 @@
 CMD=`basename "$0"`
 
 usage() {
-	echo "usage: $CMD [--linkwith-<format>] <heapfile> <execfile>"
+	echo "usage: $CMD [--linkwith-<format>] <heap2asm> <heapfile> <execfile>"
 	echo "       <format> = exec | so | a"
 	exit 1
 }
@@ -44,11 +44,10 @@ eval $ARCH_N_OPSYS
 RUNX=${BIN_DIR}/.run/runx.${ARCH}-${OPSYS}
 RUN_SO=${BIN_DIR}/.run/run.${ARCH}-${OPSYS}.so
 RUN_A=${BIN_DIR}/.run/run.${ARCH}-${OPSYS}.a
-H2A=build/h2a.sh
 
 FORMAT=
-if [ $# != 2 ] ; then
-    if [ $# = 3 ] ; then
+if [ $# != 3 ] ; then
+    if [ $# = 4 ] ; then
 	case $1 in
 	    --linkwith-exec)
 		FORMAT=exec
@@ -84,8 +83,9 @@ if [ -z "$FORMAT" ] ; then
     die "no runtime object format specified"
 fi
 
-heapfile=$1
-execfile=$2
+H2A=$1
+heapfile=$2
+execfile=$3
 
 CC=cc
 LD=ld
