@@ -130,7 +130,7 @@ if [ ! -f $H2A ]; then
 fi
 
 RESULT=0
-if ${H2A} $SIZE_OPT "$heapfile" "$execfile".s ; then
+if ${H2A} "$heapfile" "$execfile".s ; then
     if [ -f "$execfile".s ] ; then
 	if ${CC} -c -o "$execfile".o "$execfile".s ; then
 	    rm "$execfile".s
