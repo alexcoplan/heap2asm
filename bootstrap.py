@@ -25,7 +25,7 @@ def fail():
 
 def run(cmd, quiet, **kwargs):
   log("Running " + " ".join(cmd) + " ... ")
-  res = subprocess.run(cmd, capture_output=True, **kwargs)
+  res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
   if res.returncode == 0:
     logln("OK")
     return
