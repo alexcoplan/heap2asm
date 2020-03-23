@@ -47,8 +47,6 @@ def plat_str() -> str:
   return platform.system().lower()
 
 build_dir = 'build'
-heap_suffix = f'amd64-{plat_str()}' # assume x64
-heap_name = f"heap2asm.{heap_suffix}"
 script_name = "h2a.sh"
 
 def artefact(path : str) -> str:
@@ -84,6 +82,7 @@ def main() -> None:
   if not os.path.exists(build_dir):
     os.makedirs(build_dir)
 
+  heap_name = f"heap2asm.{heap_suffix}"
   heap_path = artefact(heap_name)
   run(['ml-build', 'heap2asm.cm', 'Main.main', heap_path])
 
