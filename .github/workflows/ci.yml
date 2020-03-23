@@ -15,3 +15,5 @@ jobs:
       run: mypy --strict bootstrap.py
     - name: bootstrap
       run: ./bootstrap.py
+      env:
+        SMLNJ_HOME: /usr/lib/smlnj
