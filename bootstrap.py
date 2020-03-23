@@ -62,13 +62,13 @@ def main() -> None:
   if "SMLNJ_HOME" in os.environ:
     home = os.environ["SMLNJ_HOME"]
   else:
-    home = "/usr/local/smlnj/bin"
+    home = "/usr/local/smlnj"
 
   if not os.path.exists(home):
     print("smlnj not found!")
     exit(1)
 
-  arch_opsys = os.path.join(home, ".arch-n-opsys")
+  arch_opsys = os.path.join(home, "bin/.arch-n-opsys")
   res = subprocess.run(arch_opsys, stdout=subprocess.PIPE, check=True)
   info = res.stdout.decode("utf-8").split(";")
   heap_suffix = None
