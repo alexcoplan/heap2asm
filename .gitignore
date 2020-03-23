@@ -2,3 +2,4 @@
 *.swo
 .cm
 build
+.mypy_cache

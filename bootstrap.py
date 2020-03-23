@@ -6,26 +6,28 @@ import stat
 import platform
 import sys
 
+from typing import List
+
 logbuf = ""
 quiet = True
 
-def log(msg):
+def log(msg : str) -> None:
   global logbuf
   logbuf += msg
   if not quiet:
     sys.stdout.write(msg)
 
-def logln(msg):
+def logln(msg : str) -> None:
   log(msg + "\n")
 
-def fail():
+def fail() -> None:
   if quiet: # if we have been keeping quiet, print log up to this point.
     print(logbuf)
   exit(1)
 
-def run(cmd, quiet, **kwargs):
+def run(cmd : List[str]) -> None:
   log("Running " + " ".join(cmd) + " ... ")
-  res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+  res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if res.returncode == 0:
     logln("OK")
     return
@@ -41,7 +43,7 @@ def run(cmd, quiet, **kwargs):
 
   fail()
 
-def plat_str():
+def plat_str() -> str:
   return platform.system().lower()
 
 build_dir = 'build'
@@ -49,19 +51,41 @@ heap_suffix = f'amd64-{plat_str()}' # assume x64
 heap_name = f"heap2asm.{heap_suffix}"
 script_name = "h2a.sh"
 
-def artefact(path):
+def artefact(path : str) -> str:
   return os.path.join(build_dir, path)
 
-def make_executable(file):
+def make_executable(file : str) -> None:
   st = os.stat(file)
   os.chmod(file, st.st_mode | stat.S_IEXEC)
 
-def main():
+def main() -> None:
+  if "SMLNJ_HOME" in os.environ:
+    home = os.environ["SMLNJ_HOME"]
+  else:
+    home = "/usr/local/smlnj/bin"
+
+  if not os.path.exists(home):
+    print("smlnj not found!")
+    exit(1)
+
+  arch_opsys = os.path.join(home, ".arch-n-opsys")
+  res = subprocess.run(arch_opsys, stdout=subprocess.PIPE, check=True)
+  info = res.stdout.decode("utf-8").split(";")
+  heap_suffix = None
+  for datum in info:
+    key, value = datum.split("=")
+    if key.strip() == "HEAP_SUFFIX":
+      heap_suffix = value
+
+  if heap_suffix is None:
+    print("Unknown HEAP_SUFFIX!")
+    exit(1)
+
   if not os.path.exists(build_dir):
     os.makedirs(build_dir)
 
   heap_path = artefact(heap_name)
-  run(['ml-build', 'heap2asm.cm', 'Main.main', heap_path], quiet)
+  run(['ml-build', 'heap2asm.cm', 'Main.main', heap_path])
 
   script_path = artefact(script_name)
   with open(script_path, 'w') as f:
@@ -71,7 +95,7 @@ def main():
   make_executable(script_path)
 
   out_path = artefact('heap2asm')
-  run(['./heap2exec', script_path, heap_path, out_path], quiet)
+  run(['./heap2exec', script_path, heap_path, out_path])
 
 if __name__ == '__main__':
   quiet = False # if running on command-line, be verbose

@@ -1,0 +1,17 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: apt-update
+      run: sudo apt update
+    - name: apt-install-deps
+      run: sudo apt install mypy smlnj
+    - name: mypy
+      run: mypy --strict bootstrap.py
+    - name: bootstrap
+      run: ./bootstrap.py
