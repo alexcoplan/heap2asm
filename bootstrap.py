@@ -66,21 +66,23 @@ def main() -> None:
     print("smlnj not found!")
     exit(1)
 
+  if not os.path.exists(build_dir):
+    os.makedirs(build_dir)
+
   arch_opsys = os.path.join(home, "bin/.arch-n-opsys")
   res = subprocess.run(arch_opsys, stdout=subprocess.PIPE, check=True)
-  info = res.stdout.decode("utf-8").split(";")
-  heap_suffix = None
-  for datum in info:
+  info_parts = res.stdout.decode("utf-8").split(";")
+  info = {}
+  for datum in info_parts:
     key, value = datum.split("=")
-    if key.strip() == "HEAP_SUFFIX":
-      heap_suffix = value
+    info[key.strip()] = value.strip()
 
-  if heap_suffix is None:
+  if "HEAP_SUFFIX" not in info:
     print("Unknown HEAP_SUFFIX!")
     exit(1)
 
-  if not os.path.exists(build_dir):
-    os.makedirs(build_dir)
+  heap_suffix = info["HEAP_SUFFIX"]
+  arch = info["ARCH"]
 
   heap_name = f"heap2asm.{heap_suffix}"
   heap_path = artefact(heap_name)
@@ -93,8 +95,12 @@ def main() -> None:
 
   make_executable(script_path)
 
-  out_path = artefact('heap2asm')
-  run(['./heap2exec', script_path, heap_path, out_path])
+  cmd = ['./heap2exec']
+  if arch == "x86":
+    cmd.append('-32')
+
+  cmd += [script_path, heap_path, artefact('heap2asm')]
+  run(cmd)
 
 if __name__ == '__main__':
   quiet = False # if running on command-line, be verbose

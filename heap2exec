@@ -21,8 +21,10 @@ die () {
 
 # the default size; this is set by the config/install.sh script
 #
+BITNESS_CFLAG=
 SIZE=64
 if [ x"$1" = x-32 ] ; then
+  BITNESS_CFLAG=-m32
   SIZE=32 ; shift
 elif [ x"$1" = x-64 ] ; then
   SIZE=64 ; shift
@@ -107,17 +109,17 @@ case ${OPSYS} in
 	;;
     freebsd)
 	SO_PROG=${CC}
-	SO_FLAGS=-Wl,--export-dynamic
+	SO_FLAGS="-Wl,--export-dynamic ${BITNESS_CFLAG}"
 	SO_LIBS=-lm
 	A_PROG=${CC}
-	A_FLAGS=-Wl,--export-dynamic
+	A_FLAGS="-Wl,--export-dynamic ${BITNESS_CFLAG}"
 	A_LIBS=-lm
 	;;
     linux)
 	SO_PROG=${CC}
-	SO_FLAGS=-Wl,--export-dynamic
+	SO_FLAGS="-Wl,--export-dynamic ${BITNESS_CFLAG}"
 	A_PROG=${CC}
-	A_FLAGS=-Wl,--export-dynamic
+	A_FLAGS="-Wl,--export-dynamic ${BITNESS_CFLAG}"
 	A_LIBS="-lm -ldl"
 	;;
     *)
@@ -132,7 +134,7 @@ fi
 RESULT=0
 if ${H2A} "$heapfile" "$execfile".s ; then
     if [ -f "$execfile".s ] ; then
-	if ${CC} -c -o "$execfile".o "$execfile".s ; then
+	if ${CC} ${BITNESS_CFLAG} -c -o "$execfile".o "$execfile".s ; then
 	    rm "$execfile".s
 	else
 	    rm "$execfile".s

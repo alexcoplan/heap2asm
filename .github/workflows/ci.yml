@@ -10,7 +10,7 @@ jobs:
     - name: apt-update
       run: sudo apt update
     - name: apt-install-deps
-      run: sudo apt install mypy smlnj
+      run: sudo apt install mypy smlnj gcc-multilib g++-multilib
     - name: mypy
       run: mypy --strict bootstrap.py
     - name: bootstrap
